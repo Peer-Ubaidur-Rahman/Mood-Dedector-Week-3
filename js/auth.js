@@ -1,4 +1,6 @@
 const API_URL = 'https://mood-dedector-week-3.onrender.com/api';
+const API_BASE_URL = 'https://mood-dedector-week-3.onrender.com/api'; // Added for consistency
+
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
 function checkAuth() {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
@@ -44,6 +47,7 @@ function displayUserInfo(user) {
     console.log('Logged in as:', user.fullname);
 }
 
+// Signup Form Handler
 document.addEventListener('DOMContentLoaded', function() {
     const signupForm = document.getElementById('signup-form');
     if (signupForm) {
@@ -67,8 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
+                // Create abort controller with 2-minute timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds
+                
                 const response = await fetch(`${API_BASE_URL}/signup`, {
                     method: 'POST',
+                    signal: controller.signal,
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -79,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
                 
+                clearTimeout(timeoutId);
                 const data = await response.json();
                 
                 if (response.ok) {
@@ -89,12 +99,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                alert('Network error. Please make sure the backend server is running.');
+                if (error.name === 'AbortError') {
+                    alert('Request timeout. The backend is starting up, please wait 30 seconds and try again.');
+                } else {
+                    alert('Network error. Please check your connection or try again in a moment.');
+                }
             }
         });
     }
 });
 
+// Login Form Handler
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
@@ -106,8 +121,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const remember = document.getElementById('remember').checked;
             
             try {
+                // Create abort controller with 2-minute timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds
+                
                 const response = await fetch(`${API_BASE_URL}/login`, {
                     method: 'POST',
+                    signal: controller.signal,
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -117,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
                 
+                clearTimeout(timeoutId);
                 const data = await response.json();
                 
                 if (response.ok) {
@@ -130,7 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert('Network error. Please make sure the backend server is running.');
+                if (error.name === 'AbortError') {
+                    alert('Request timeout. The backend is starting up, please wait 30 seconds and try again.');
+                } else {
+                    alert('Network error. Please check your connection or try again in a moment.');
+                }
             }
         });
     }
