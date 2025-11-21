@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+const API_URL = 'https://mood-dedector-week-3.onrender.com/api';
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     
